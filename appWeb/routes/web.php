@@ -1,18 +1,18 @@
 <?php
 
+use App\Http\Controllers\usuarioController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+// TODO,  Ruta por defecto
+Route::get('/',  [usuarioController::class, 'lista'])->name('index');
 
-Route::get('/', function () {
-    return view('welcome');
+// ? Si no encontró la ruta
+Route::fallback(function () {
+    return redirect('/');
+});
+
+// TODO, Usuarios
+Route::prefix('usuarios')->group(function () {
+    //* Ruta para enviar email
+    Route::post('enviar/email', [usuarioController::class, 'enviarEmail'])->name('enviar.email');
 });
