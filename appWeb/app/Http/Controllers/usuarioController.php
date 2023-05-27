@@ -26,9 +26,25 @@ class usuarioController extends Controller
     // * Lista de usuarios
     public function lista()
     {
-        $lista = $this->usuario::all();
+        try {
 
-        return view('index', compact('lista'));
+            // * Obtenemos datos
+            $lista = $this->usuario::all();
+
+            // * Retornamos lista al index
+            return view('index', ['lista' => $lista]);
+
+            // ! Errores
+        } catch (QueryException $e) {
+            // ! En la query
+            return view('index')
+                ->with('error_detectado', 'Error de consulta, No se pudo obtener la lista, Detalles: ' . $e->getMessage());
+            // ! Desconocido
+        } catch (\Exception $e) {
+            return view(
+                'index',
+            )->with('error_detectado', 'Error desconocido al buscar la noticia ->' . $e->getMessage());
+        }
     }
 
     // * Buscar usuario por email
@@ -41,7 +57,7 @@ class usuarioController extends Controller
                 // * Validaciones
                 [
                     'emailDestino' => 'required|string|min:5|max:255',
-                    "remitente" => 'nullable|string|min:2|max:255',
+                    "destinatario" => 'nullable|string|min:2|max:255',
                     'mensaje' => 'required|string|min:5|max:1500',
                 ],
                 // ! Mensajes de errores
@@ -50,9 +66,9 @@ class usuarioController extends Controller
                     'emailDestino.string' => 'El campo email e destino debe ser un string.',
                     'emailDestino.max' => 'El campo email de destino no debe tener más de 255 caracteres.',
                     'emailDestino.min' => 'El campo email de destino debe tener al menos 5 caracteres.',
-                    'remitente.string' => 'El campo del remitente debe ser un string.',
-                    'remitente.max' => 'El campo del remitente no debe tener más de 255 caracteres.',
-                    'remitente.min' => 'El campo del remitente debe tener al menos 2 caracteres.',
+                    'destinatario.string' => 'El campo del destinatario debe ser un string.',
+                    'destinatario.max' => 'El campo del destinatario no debe tener más de 255 caracteres.',
+                    'destinatario.min' => 'El campo del destinatario debe tener al menos 2 caracteres.',
                     'mensaje.required' => 'El campo mensaje es obligatorio.',
                     'mensaje.string' => 'El campo del mensaje debe ser un string.',
                     'mensaje.max' => 'El campo del mensaje no debe tener más de 1500 caracteres.',
@@ -62,10 +78,9 @@ class usuarioController extends Controller
 
             // * Ponemos datos del email
             $datos = [
-                'remitente' => $request->remitente ?? "desconocido",
                 'cuerpo' => [
                     'mensaje' => $request->mensaje,
-                    'remitente' => $request->remitente ?? "0",
+                    'destinatario' => $request->destinatario ?? "desconocido",
                 ],
             ];
 
@@ -73,26 +88,22 @@ class usuarioController extends Controller
             Mail::to($request->emailDestino)->send(new EnviarEmail($datos));
 
             // * ÉXITO, Retornamos vista
-            return response()->json([
-                'estado' => true,
-            ], 200);
+            return redirect()->back()
+                ->with('accion_detectada', 'Éxito, El email se envió correctamente a ' . $request->emailDestino);
 
             // ! Captar errores
         } catch (ValidationException $e) {
             // ! En la Validación
-            return response()->json([
-                'error' =>  'Error en la validación, error: ' . $e->getMessage()
-            ], 400);
+            return redirect()->back()
+                ->with('error_accion', 'Error de validación, detalles: ' . $e->getMessage());
         } catch (QueryException $e) {
             // ! En la Consulta
-            return response()->json([
-                'error' => 'Error en la consulta, error: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()
+                ->with('error_accion', 'Error de consulta, detalles: ' . $e->getMessage());
         } catch (\Exception $e) {
             // ! Otros
-            return response()->json([
-                'error' => 'Error desconocido, error: ' . $e->getMessage()
-            ], 501);
+            return redirect()->back()
+                ->with('error_accion', 'Error desconocido, detalles: ' . $e->getMessage());
         }
     }
 }

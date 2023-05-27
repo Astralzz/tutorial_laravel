@@ -26,10 +26,6 @@ class EnviarEmail extends Mailable
     public function build()
     {
 
-        // ? No existe el remitente ?
-        if (!$this->datos['remitente']) {
-            throw new \Exception('No se encontró el remitente del email');
-        }
         // ? No existe el cuerpo ?
         if (!$this->datos['cuerpo']) {
             throw new \Exception('No se encontró el mensaje del email');
@@ -38,12 +34,12 @@ class EnviarEmail extends Mailable
         // * Enviamos email con su vista
         return $this->from(config('mail.from.address'))
             // Titulo
-            ->subject('Hola, saludos de ' .  $this->datos['remitente'])
+            ->subject('Hola, saludos de Edain Jesus')
             // Vista
             ->view('emails.vista')
             // Datos a enviar
             ->with([
-                'datos', $this->datos['cuerpo'],
+                'cuerpo' => $this->datos['cuerpo'],
             ]);
     }
 }
