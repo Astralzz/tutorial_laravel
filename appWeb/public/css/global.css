@@ -1,0 +1,14 @@
+/* TODO, Estilos globales de la pagina */
+.color-rojo {
+    color: brown;
+}
+
+.color-amarillo {
+    color: rgb(201, 158, 80);
+}
+
+.boton-a {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}

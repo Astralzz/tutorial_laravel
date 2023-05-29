@@ -13,6 +13,10 @@ Route::fallback(function () {
 
 // TODO, Usuarios
 Route::prefix('usuarios')->group(function () {
+    //* Ruta para agregar usuario
+    Route::post('agregar', [usuarioController::class, 'agregarUsuario'])->name('nuevo.usuario');
+    //* Ruta para eliminar usuario
+    Route::delete('eliminar/{id}', [usuarioController::class, 'eliminarUsuario'])->name('eliminar.usuario');
     //* Ruta para enviar email
     Route::post('enviar/email', [usuarioController::class, 'enviarEmail'])->name('enviar.email');
 });

@@ -47,6 +47,115 @@ class usuarioController extends Controller
         }
     }
 
+    // * Crear nuevo usuario
+    public function agregarUsuario(Request $request)
+    {
+
+        try {
+
+            // * Validamos datos
+            $request->validate(
+                // * Reglas
+                [
+                    'nombre' => 'required|string|min:2|max:70',
+                    'apellido_paterno' => 'required|string|min:2|max:70',
+                    'apellido_materno' => 'required|string|min:2|max:70',
+                    'email' => 'required|string|min:5|max:70',
+                    'telefono' => 'nullable|string|min:10|max:10',
+                ],
+                // ! Mensajes de errores
+                [
+                    'nombre.required' => 'El campo del nombre es obligatorio.',
+                    'nombre.string' => 'El campo del nombre debe ser un string.',
+                    'nombre.max' => 'El campo del  nombre no debe tener más de 70 caracteres.',
+                    'nombre.min' => 'El campo del nombre debe tener al menos 2 caracteres.',
+                    'apellido_paterno.required' => 'El campo del del apellido paterno es obligatorio.',
+                    'apellido_paterno.string' => 'El campo del apellido paterno debe ser un string.',
+                    'apellido_paterno.max' => 'El campo del apellido paterno no debe tener más de 70 caracteres.',
+                    'apellido_paterno.min' => 'El campo del apellido paterno debe tener al menos 2 caracteres.',
+                    'apellido_materno.required' => 'El campo del del apellido materno es obligatorio.',
+                    'apellido_materno.string' => 'El campo del apellido materno debe ser un string.',
+                    'apellido_materno.max' => 'El campo del apellido materno no debe tener más de 70 caracteres.',
+                    'apellido_materno.min' => 'El campo del apellido materno debe tener al menos 2 caracteres.',
+                    'email.required' => 'El campo del email es obligatorio.',
+                    'email.string' => 'El campo del email debe ser un string.',
+                    'email.max' => 'El campo del email no debe tener más de 70 caracteres.',
+                    'email.min' => 'El campo del email debe tener al menos 5 caracteres.',
+                    'telefono.string' => 'El campo del telefono debe ser un string.',
+                    'telefono.max' => 'El campo del telefono debe tener 10 caracteres.',
+                    'telefono.min' => 'El campo del telefono debe tener 10 caracteres.',
+                ]
+            );
+
+            // * Crear un nueva usuario
+            $usuario = $this->usuario;
+
+            // * Ponemos automático
+            $usuario->nombre = $request->nombre;
+            $usuario->apellido_paterno = $request->apellido_paterno;
+            $usuario->apellido_materno = $request->apellido_materno;
+            $usuario->email = $request->email;
+
+            // ? Llego el telefono?
+            if ($request->telefono) {
+                $usuario->telefono = $request->telefono;
+            }
+
+            // * Guardamos
+            $usuario->save();
+
+            // * ÉXITO, Retornamos vista
+            return redirect()->back()
+                ->with('accion_detectada', 'Éxito, El usuario se creo correctamente');
+
+            // ! Captar errores
+        } catch (ValidationException $e) {
+            // ! En la Validación
+            return redirect()->back()
+                ->with('error_accion', 'Error de validación, detalles: ' . $e->getMessage());
+        } catch (QueryException $e) {
+            // ! En la Consulta
+            return redirect()->back()
+                ->with('error_accion', 'Error de consulta, detalles: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            // ! Otros
+            return redirect()->back()
+                ->with('error_accion', 'Error desconocido, detalles: ' . $e->getMessage());
+        }
+    }
+
+    // * Eliminar usuario
+    public function eliminarUsuario($id)
+    {
+        try {
+
+            // ? Buscamos
+            $usuario = $this->usuario::find($id);
+
+            // ? No existe el usuario ?
+            if (!$usuario) {
+                throw new \Exception('Error, El usuario que intenta eliminar no existe');
+            }
+
+            // * Eliminamos
+            $usuario->delete();
+
+            // * ÉXITO, Retornamos vista
+            return redirect()->back()
+                ->with('accion_detectada', 'Éxito, El usuario se elimino correctamente');
+
+            // ! Captar errores
+        } catch (QueryException $e) {
+            // ! En la Consulta
+            return redirect()->back()
+                ->with('error_accion', 'Error de consulta, detalles: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            // ! Otros
+            return redirect()->back()
+                ->with('error_accion', 'Error desconocido, detalles: ' . $e->getMessage());
+        }
+    }
+
     // * Buscar usuario por email
     public function enviarEmail(Request $request)
     {
