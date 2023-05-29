@@ -1,4 +1,4 @@
-# USO E INSTALACIÓN DE LARAVEL
+# USO E INSTALACIÓN DE LARAVEL (POR EDAIN JESUS)
 
 ## Instalar xampp
 
@@ -96,8 +96,8 @@
 - LLenar os campos del paso anterior con
 
         DB_CONNECTION=tu_promovedor_de_tu_bd
-        DB_HOST=ip_del servidor
-        DB_PORT=puerto_del servidor
+        DB_HOST=ip_del_servidor
+        DB_PORT=puerto_del_servidor
         DB_DATABASE=nombre_de_la_base_datos
         DB_USERNAME=tu_usuario
         DB_PASSWORD=tu_contraseña
